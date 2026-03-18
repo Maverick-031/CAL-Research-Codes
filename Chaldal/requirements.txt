@@ -1,0 +1,7 @@
+argparse
+time
+os
+datetime
+pandas
+selenium
+BeautifulSoup
