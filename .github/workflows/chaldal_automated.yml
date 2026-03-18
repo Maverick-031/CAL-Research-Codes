@@ -2,6 +2,7 @@ name: Automated Chaldal Scraper
 
 on:
   schedule:
+    # 02:00 UTC is 08:00 AM Bangladesh Time
     - cron: '0 2 * * *'
   workflow_dispatch:
 
@@ -19,8 +20,9 @@ jobs:
           python-version: '3.10'
 
       - name: Install Dependencies
+        # We tell GitHub to look inside the Chaldal folder for requirements.txt
         run: |
-          pip install selenium pandas openpyxl beautifulsoup4
+          pip install -r Chaldal/requirements.txt
 
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
@@ -29,13 +31,15 @@ jobs:
           install-chromedriver: true
 
       - name: Run Scraper
-        # Use 'xvfb-run' to provide a virtual display for Chrome even in headless mode
+        # 'working-directory' moves the "active folder" into Chaldal
+        working-directory: ./Chaldal
         run: |
           xvfb-run python Chaldal_scrape.py --input links.xlsx
 
       - name: Upload Data to GitHub Artifacts
-        if: always() # Ensure upload even if previous steps fail
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Chaldal-Data-${{ github.run_id }}
-          path: chaldal_products_*.csv
+          # We look for the CSV specifically inside the Chaldal folder
+          path: Chaldal/chaldal_products_*.csv
