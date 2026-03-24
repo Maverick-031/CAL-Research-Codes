@@ -1,48 +1,47 @@
-name: Automated Chaldal Scraper
+name: Chaldal Daily Scraper
 
 on:
   schedule:
-    - cron: '0 2 * * *'
-  workflow_dispatch:
+    - cron: '0 3 * * *'      # Runs every day at 3:00 AM UTC (= 9:00 AM Bangladesh time)
+  workflow_dispatch:         # Allows you to run it manually anytime
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write        # Required so the workflow can commit the CSV
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
 
-      - name: Install Dependencies
+      - name: Install Chromium + ChromeDriver
         run: |
-          pip install selenium pandas openpyxl beautifulsoup4
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
 
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: 'latest'
-          install-chromedriver: true
-
-      - name: Run Scraper
-        working-directory: ./Chaldal
+      - name: Install Python dependencies
         run: |
-          # xvfb-run creates a virtual display which is often required for Chrome on Linux
-          xvfb-run python Chaldal_scrape.py --input links.xlsx
+          pip install -r Chaldal/requirements.txt
 
-      - name: List Files (Debug Step)
-        if: always()
-        run: ls -R
+      - name: Run Chaldal scraper
+        run: |
+          cd Chaldal
+          python Chaldal_scrape.py
 
-      - name: Upload Data to GitHub Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: Chaldal-Data-${{ github.run_id }}
-          # This path looks for the CSV specifically inside the Chaldal subfolder
-          path: Chaldal/chaldal_products_*.csv
-          if-no-files-found: error
+      - name: Commit and push the new CSV
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Chaldal/chaldal_products_*.csv
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update chaldal_products_$(date +'%Y-%m-%d').csv"
+            git push
+          fi
