@@ -102,6 +102,9 @@ def make_driver() -> webdriver.Chrome:
     opts.add_argument("--disable-gpu")
     opts.add_argument("--lang=en-US")
 
+        # ←←← ADD THIS LINE (required on GitHub Linux runner)
+    opts.binary_location = "/usr/bin/chromium-browser"
+
     # Selenium 4.6+ auto-downloads the correct ChromeDriver for your Chrome version.
     # No need for webdriver-manager at all.
     driver = webdriver.Chrome(options=opts)
