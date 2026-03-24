@@ -1,0 +1,47 @@
+name: Arogga Daily Scraper
+
+on:
+  schedule:
+    - cron: '0 18 * * *'      # Runs every day at 18:00 PM UTC (= 12:00 PM Bangladesh time)
+  workflow_dispatch:         # Allows manual run anytime
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # Required to commit the CSV
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Chromium + ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r Arogga/requirements.txt
+
+      - name: Run Arogga scraper
+        run: |
+          cd Arogga
+          python arogga_scraper.py
+
+      - name: Commit and push the new CSV
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Arogga/output/**/arogga_*.csv
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update arogga_$(date +'%Y-%m-%d').csv"
+            git push
+          fi
