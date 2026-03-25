@@ -170,8 +170,8 @@ Beef Boneless ± 25 gm,500 gm,559,https://chaldal.com/meat-new
 Broiler Chicken Breast Boneless ± 50 gm,1 kg,679,https://chaldal.com/meat-new
 Beef Liver (Kolija),500 gm,419,https://chaldal.com/meat-new
 Broiler Chicken Breast Boneless ± 25 gm,500 gm,339,https://chaldal.com/meat-new
-Beef Ribs (Shinar Mangsho),1 kg,829,https://chaldal.com/meat-new
 Chicken Liver (Kolija) ± 25 gm,500 gm,139,https://chaldal.com/meat-new
+Beef Ribs (Shinar Mangsho),1 kg,829,https://chaldal.com/meat-new
 Broiler Chicken Thigh Boneless ± 50 gm,1 kg,549,https://chaldal.com/meat-new
 Beef Bone In ± 20 gm,250 gm,219,https://chaldal.com/meat-new
 Beef Bone In (Net Weight ± 25 gm),500 gm,419,https://chaldal.com/meat-new
@@ -423,8 +423,8 @@ Rahul Vermicelli Chikon Shemai,200 gm,35,https://chaldal.com/shemai-suji
 Rahul Vermicelli U Shape Shemai,200 gm,45,https://chaldal.com/shemai-suji
 Banoful Lashcha Shemai,200 gm,50,https://chaldal.com/shemai-suji
 Rahul Semolina (Suji),200 gm,23,https://chaldal.com/shemai-suji
-Ramisa Chutki Shemai Box,200 gm,70,https://chaldal.com/shemai-suji
 Banoful Vermicelli Shemai,200 gm,45,https://chaldal.com/shemai-suji
+Ramisa Chutki Shemai Box,200 gm,70,https://chaldal.com/shemai-suji
 Rahul Rosted Semolina (Vaja Suji),400 gm,65,https://chaldal.com/shemai-suji
 Rahul Semolina (Suji),500 gm,50,https://chaldal.com/shemai-suji
 Dekko Laccha Shemai,180 gm,50,https://chaldal.com/shemai-suji
@@ -662,7 +662,6 @@ Suree Sweet Chilli Sauce,295 ml,375,https://chaldal.com/other-sauces
 Remia Garlic Sauce,250 ml,339,https://chaldal.com/other-sauces
 Saad Sweet Chilli Sauce,340 gm,150,https://chaldal.com/other-sauces
 Orgin Sweet Chilli Sauce,340 gm,130,https://chaldal.com/other-sauces
-Chicken Eggs (Discounted),12 pcs,99,https://chaldal.com/eggs
 Chicken Eggs (Layer),12 pcs,109,https://chaldal.com/eggs
 Chicken Eggs Layer (White),12 pcs,105,https://chaldal.com/eggs
 Chicken Eggs (Deshi),6 pcs,109,https://chaldal.com/eggs
@@ -1173,12 +1172,12 @@ Golden Harvest Frozen Dal Puri 10 pcs,454 gm,145,https://chaldal.com/local-snack
 Ramisa Chira (Red kacha),500 gm,70,https://chaldal.com/local-snacks
 Ramisa Fried Chira (Oil),200 gm,70,https://chaldal.com/local-snacks
 Ramisa Til Papri,100 gm,60,https://chaldal.com/local-snacks
+Ramisa Jhal Monakka Jar,350 gm,160,https://chaldal.com/local-snacks
 Ramisa Sweet Monakka,200 gm,70,https://chaldal.com/local-snacks
 Ramisa Daibetes Murali,200 gm,70,https://chaldal.com/local-snacks
 Ramisa Jhal Nimki Jar,250 gm,160,https://chaldal.com/local-snacks
 Ramisa Fried Chira (Oil) Jar,300 gm,150,https://chaldal.com/local-snacks
 Ramisa Sweet Monakka Jar,350 gm,160,https://chaldal.com/local-snacks
-Ramisa Jhal Monakka Jar,350 gm,160,https://chaldal.com/local-snacks
 Ramisa Monakka,200 gm,70,https://chaldal.com/local-snacks
 Ramisa Gurer Monakka,200 gm,70,https://chaldal.com/local-snacks
 Bombay Sweets Mr. Twist,22 gm,25,https://chaldal.com/chips-pretzels
@@ -1187,8 +1186,8 @@ Kurkure American Style Cream & Onion Chips,25 gm,20,https://chaldal.com/chips-pr
 Kurkure Naughty Tomato Chips,70 gm,50,https://chaldal.com/chips-pretzels
 Cheese Puff,14 gm,10,https://chaldal.com/chips-pretzels
 Bombay Sweets Cheese Ball Cheezee Corn Snacks,10 gm,10,https://chaldal.com/chips-pretzels
-Bombay Sweets Ring Chips,25 gm,20,https://chaldal.com/chips-pretzels
 Ifad Eggy Stix Bar-B-Q Chips,16 gm,10,https://chaldal.com/chips-pretzels
+Bombay Sweets Ring Chips,25 gm,20,https://chaldal.com/chips-pretzels
 Bombay Sweets Potato Crackers,28 gm,20,https://chaldal.com/chips-pretzels
 Pran Potato Cracker,15 gm,10,https://chaldal.com/chips-pretzels
 Bombay Sweets Nachoz Chutney & Lime,30 gm,20,https://chaldal.com/chips-pretzels
@@ -1506,8 +1505,8 @@ Hershey's Chocolate Syrup,623 gm,1029,https://chaldal.com/powder-mixes
 Foster Clark's Mandarin Instant Drink Powder,750 gm,840,https://chaldal.com/powder-mixes
 Tang Orange Flavoured Instant Drink Powder Tub,2 kg,1900,https://chaldal.com/powder-mixes
 Tang Mango Flavoured Instant Drink Powder Tub,2 kg,1900,https://chaldal.com/powder-mixes
-Tang Orange Flavoured Instant Drink Powder Jar,750 gm,780,https://chaldal.com/powder-mixes
 ISPI Orange Instant Powder Drink,500 gm,280,https://chaldal.com/powder-mixes
+Tang Orange Flavoured Instant Drink Powder Jar,750 gm,780,https://chaldal.com/powder-mixes
 Tang Orange Instant Drink Powder BIB,500 gm,425,https://chaldal.com/powder-mixes
 Standard Horlicks Health And Nutrition Drink Jar,250 gm,250,https://chaldal.com/powder-mixes
 Tang Mango Instant Drink Powder BIB,200 gm,200,https://chaldal.com/powder-mixes
@@ -1867,15 +1866,15 @@ Pran Sugar Free Orange Jelly,450 gm,270,https://chaldal.com/diabetic-food
 Quaker White Oats,500 gm,619,https://chaldal.com/diabetic-food
 Trix Dishwashing Liquid Lemon Bottle,500 ml,145,https://chaldal.com/dish-wash
 Vim Dishwashing Bar,125 gm,15,https://chaldal.com/dish-wash
-Vim Dishwashing Bar,300 gm,40,https://chaldal.com/dish-wash
 Vim Dishwashing Liquid Pouch,200 ml,50,https://chaldal.com/dish-wash
 Vim Dishwashing Liquid,475 ml,130,https://chaldal.com/dish-wash
-Vim Dishwashing Powder,500 gm,50,https://chaldal.com/dish-wash
 Gloz Dishwashing Liquid,500 ml,130,https://chaldal.com/dish-wash
 Gloz Dishwashing Bar,75 gm,10,https://chaldal.com/dish-wash
 Gloz Dishwashing Bar,125 gm,15,https://chaldal.com/dish-wash
 Finish Lebu+ Dish Washing Bar 300 gm Combo,2 pcs,80,https://chaldal.com/dish-wash
+Vim Dishwashing Bar,300 gm,40,https://chaldal.com/dish-wash
 Trix Dish Washing Bar Lemon,300 gm,40,https://chaldal.com/dish-wash
+Vim Dishwashing Powder,500 gm,50,https://chaldal.com/dish-wash
 Vim Dishwashing Liquid,950 ml,240,https://chaldal.com/dish-wash
 Trix Dishwashing Liquid Lemon Refill,250 ml,70,https://chaldal.com/dish-wash
 Trix Dishwashing Liquid (Lemon),1 ltr,270,https://chaldal.com/dish-wash
@@ -1888,6 +1887,56 @@ Shiny Dishwashing Paste Lime,400 gm,263,https://chaldal.com/dish-wash
 Magiclean Kitchen Cleaner Green Apple,500 ml,690,https://chaldal.com/dish-wash
 Xpert Dishwash Bar,300 gm,40,https://chaldal.com/dish-wash
 Gloz Dishwashing Bar,300 gm,40,https://chaldal.com/dish-wash
+Wheel Washing Powder 2 in 1 Clean & Fresh,1 kg,145,https://chaldal.com/laundry
+Tibet 570 Laundry Soap,125 gm,27,https://chaldal.com/laundry
+Surf Excel Washing Powder,500 gm,120,https://chaldal.com/laundry
+Tibet Ball Soap,125 gm,26,https://chaldal.com/laundry
+Ujala,100 ml,40,https://chaldal.com/laundry
+Ujjal Synthetic Laundry Detergent Powder,1 kg,140,https://chaldal.com/laundry
+Redy Synthetic Detergent Powder,200 gm,40,https://chaldal.com/laundry
+ACI Smart Detergent Powder,500 gm,75,https://chaldal.com/laundry
+Amana Matic Liquid Detergent Green 1 ltr (Buy 1 Get 1 Free),2 pcs,700,https://chaldal.com/laundry
+Chamak Fabric Brightener,100 ml,40,https://chaldal.com/laundry
+ACI Supreme Antibacterial Detergent Powder,1 kg,180,https://chaldal.com/laundry
+ACI Supreme Antibacterial Detergent Powder,500 gm,90,https://chaldal.com/laundry
+Wheel Washing Laundry Bar,125 gm,30,https://chaldal.com/laundry
+Wheel Washing Powder 2 in 1 Clean & Fresh,500 gm,75,https://chaldal.com/laundry
+Rin Advanced Detergent Powder,1 kg,185,https://chaldal.com/laundry
+Chaka Advanced Ball Soap,125 gm,26,https://chaldal.com/laundry
+Rin Advanced Detergent Powder,500 gm,95,https://chaldal.com/laundry
+Wheel Washing Powder 2 in 1 Clean & Fresh,2 kg,260,https://chaldal.com/laundry
+Tibet Rose & Lemon Detergent Powder,500 gm,70,https://chaldal.com/laundry
+Surf Excel Washing Powder,1 kg,235,https://chaldal.com/laundry
+Rin Advanced Detergent Powder,2 kg,370,https://chaldal.com/laundry
+Chaka All-In-1 Washing Powder,1 kg,145,https://chaldal.com/laundry
+Rin Washing Liquid,800 ml,220,https://chaldal.com/laundry
+Fast Wash Detergent Powder,1 kg,180,https://chaldal.com/laundry
+Fast Wash Detergent Powder,500 gm,90,https://chaldal.com/laundry
+Chaka All-In-1 Washing Powder,500 gm,75,https://chaldal.com/laundry
+Surf Excel Matic Liquid Detergent Top Load,1 ltr,400,https://chaldal.com/laundry
+Tibet Laundry Soap Blue,125 gm,27,https://chaldal.com/laundry
+Jet Classic Detergent Powder Paper Pack,500 gm,150,https://chaldal.com/laundry
+Jet Aroma+ Detergent Powder Paper Pack,1 kg,320,https://chaldal.com/laundry
+ACI Smart Detergent Powder,1 kg,145,https://chaldal.com/laundry
+Jet Classic Detergent Powder Paper Pack,1 kg,300,https://chaldal.com/laundry
+Rin Washing Liquid,400 ml,120,https://chaldal.com/laundry
+Nirala Ball Laundry Soap,125 gm,26,https://chaldal.com/laundry
+Keya Lemon Detergent Powder,500 gm,70,https://chaldal.com/laundry
+Surf Excel Matic Liquid Detergent Top Load,500 ml,210,https://chaldal.com/laundry
+Jet Improved Formula Liquid Detergent,1000 ml,600,https://chaldal.com/laundry
+Nirala White Detergent Powder,200 gm,40,https://chaldal.com/laundry
+Nirala White Detergent Powder,500 gm,90,https://chaldal.com/laundry
+Godrej Fab Liquid Detergent Pouch,1 ltr,250,https://chaldal.com/laundry
+Finis Fin Power White Washing Powder,500 gm,90,https://chaldal.com/laundry
+Shuvro Fabric Brightener,100 ml,35,https://chaldal.com/laundry
+Rok Shuvro Detergent Laundry Wash,1 kg,190,https://chaldal.com/laundry
+Jet Classic Detergent Powder Poly Pack,200 gm,60,https://chaldal.com/laundry
+Vanish All in One Liquid Detergent Booster,400 ml,250,https://chaldal.com/laundry
+Vanish Colour Safe Detergent Booster 10X Oxi Power,800 ml,525,https://chaldal.com/laundry
+Chaka Super White Premium Detergent Powder,1 kg,180,https://chaldal.com/laundry
+Savlon Detergent Powder,500 gm,130,https://chaldal.com/laundry
+Rok Lemon Disinfectant Floor Cleaner (Free Detergent),500 ml,155,https://chaldal.com/laundry
+Cocorex Bleach Colours Floral Fresh,1 ltr,750,https://chaldal.com/laundry
 Harpic Liquid Toilet Cleaner Original,1 ltr,235,https://chaldal.com/toilet-cleaning
 Harpic All-In-One Toilet & Bathroom Cleaning Powder,400 gm,105,https://chaldal.com/toilet-cleaning
 Harpic Liquid Toilet Cleaner Original,500 ml,135,https://chaldal.com/toilet-cleaning
@@ -2698,8 +2747,8 @@ Pur Baby New Born Feeder S,70 ml,350,https://chaldal.com/feeders
 Meril Milk & Beli Soap Bar,100 gm,60,https://chaldal.com/womens-soaps
 Lux Soap Bar Bright Glow,150 gm,90,https://chaldal.com/womens-soaps
 Lux Soap Bar Flawless Glow,25 gm,15,https://chaldal.com/womens-soaps
-Dettol Soap Bathing Bar Original Germ Defence 75 gm (Free Tiffin Box),3 pcs,195,https://chaldal.com/womens-soaps
 Dettol Bathing Soap Bar Skincare,27 gm,15,https://chaldal.com/womens-soaps
+Dettol Soap Bathing Bar Original Germ Defence 75 gm (Free Tiffin Box),3 pcs,195,https://chaldal.com/womens-soaps
 Sandalina Sandal & Rose Soap,150 gm,80,https://chaldal.com/womens-soaps
 Dettol Bathing Soap Bar Original,27 gm,15,https://chaldal.com/womens-soaps
 "Dettol Soap Bathing Bar Family Pack (Cool, Skincare & Original) 75 gm",3 pcs,179,https://chaldal.com/womens-soaps
@@ -3109,8 +3158,8 @@ AXIS-Y Dark Spot Correcting Glow Serum,50 ml,1594,https://chaldal.com/serum-oil-
 Cetaphil Ceramide Serum,30 ml,4576,https://chaldal.com/serum-oil-toners
 The Dermalix Acne Treatment Serum,30ml,890,https://chaldal.com/serum-oil-toners
 The Dermalix Brightening Serum,30 ml,890,https://chaldal.com/serum-oil-toners
-Dettol Soap Bathing Bar Original Germ Defence 75 gm (Free Tiffin Box),3 pcs,195,https://chaldal.com/mens-soaps
 Dettol Bathing Soap Bar Skincare,27 gm,15,https://chaldal.com/mens-soaps
+Dettol Soap Bathing Bar Original Germ Defence 75 gm (Free Tiffin Box),3 pcs,195,https://chaldal.com/mens-soaps
 Lifebuoy Soap Bar Lemon Fresh,90 gm,55,https://chaldal.com/mens-soaps
 ACI Savlon Fresh Antiseptic Soap,125 gm,80,https://chaldal.com/mens-soaps
 Dettol Soap Bathing Bar Original Germ Defence,125 gm,95,https://chaldal.com/mens-soaps
@@ -3399,7 +3448,6 @@ ACI Savlon Ocean Blue Handwash,1 ltr,380,https://chaldal.com/liquid-handwash
 Godrej Magic Handwash Refill Lime & Aloevera 9 gm,4 pcs,120,https://chaldal.com/liquid-handwash
 Lifebuoy Handwash Total Bottle,1 ltr,400,https://chaldal.com/liquid-handwash
 Dettol Handwash Re-Energize Liquid Refill,750 ml,270,https://chaldal.com/liquid-handwash
-Lifebuoy Handwash Lemon Fresh Refill,170 ml,90,https://chaldal.com/liquid-handwash
 Dettol Fresh Liquid Handwash Refill,170 ml,80,https://chaldal.com/liquid-handwash
 Dettol Handwash Aloe Vera Refill 170 ml Combo pack,2 pcs,160,https://chaldal.com/liquid-handwash
 Savlon Handwash Lemon Burst,170 ml,80,https://chaldal.com/liquid-handwash
@@ -3420,6 +3468,7 @@ Lifebuoy Handwash Total Refill,170 ml,90,https://chaldal.com/liquid-handwash
 ACI Savlon Lavender Handwash Refill,170 ml,80,https://chaldal.com/liquid-handwash
 Sepnil Extra Mild Tea Oil Handwash Refill,170 ml,75,https://chaldal.com/liquid-handwash
 Godrej Magic Handwash Refill Pack,9 gm,30,https://chaldal.com/liquid-handwash
+Lifebuoy Handwash Lemon Fresh Refill,170 ml,90,https://chaldal.com/liquid-handwash
 Dettol Handwash Re-Energize Liquid Refill,170 ml,80,https://chaldal.com/liquid-handwash
 Lifebuoy Handwash Lemon Fresh Refill Multipack 170 ml,4 pcs,300,https://chaldal.com/liquid-handwash
 Dettol Handwash Aloe Vera Liquid Pump,200 ml,110,https://chaldal.com/liquid-handwash
@@ -3451,8 +3500,8 @@ Fresh Hand Towel (250X1 Ply),each,100,https://chaldal.com/tissue-wipes
 "Bashundhara Paper Napkins 13"" Unscented",100 pcs,75,https://chaldal.com/tissue-wipes
 Fresh Perfumed Facial Tissue (150 X 2) ply Box,each,100,https://chaldal.com/tissue-wipes
 Fresh Toilet Tissue (Family Value Pack),4 pcs,100,https://chaldal.com/tissue-wipes
-Fay Facial Tissue Non-Perfume (150 X 2 ply) Box,each,105,https://chaldal.com/tissue-wipes
 "Fresh Paper Napkins 13"" Perfumed (100X1 Ply)",each,75,https://chaldal.com/tissue-wipes
+Fay Facial Tissue Non-Perfume (150 X 2 ply) Box,each,105,https://chaldal.com/tissue-wipes
 Fresh White Paper Napkin Non-Perfumed,100 pcs,75,https://chaldal.com/tissue-wipes
 Partex Cleen Hand Towel (200X2 Ply),each,85,https://chaldal.com/tissue-wipes
 Bashundhara Toilet Tissue,4 pcs,112,https://chaldal.com/tissue-wipes
@@ -3968,8 +4017,8 @@ Mobil 1 0W-20,4 ltr,6880,https://chaldal.com/vehicle-essentials
 "Forged Steel Wrench (300 mm X 12"")",each,410,https://chaldal.com/vehicle-essentials
 Lomba Lebu (Long Lemon),4 pcs,75,https://chaldal.com/keto-food
 Aarong Dairy Sour Curd,500 gm,120,https://chaldal.com/keto-food
-Duck Eggs (Hasher Dim),6 pcs,115,https://chaldal.com/keto-food
-Quail Eggs,20 pcs,85,https://chaldal.com/keto-food
+Duck Eggs (Hasher Dim),6 pcs,109,https://chaldal.com/keto-food
+Quail Eggs,20 pcs,79,https://chaldal.com/keto-food
 Brooke Bond Taaza Black Tea,400 gm,250,https://chaldal.com/keto-food
 Aarong Dairy Austagram Cheese,200 gm,190,https://chaldal.com/keto-food
 Best's Mushroom Choice Whole Tin,425 gm,182,https://chaldal.com/keto-food
