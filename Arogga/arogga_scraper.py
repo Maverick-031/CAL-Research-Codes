@@ -1,74 +1,117 @@
 """
-Arogga Category Scraper  —  Selenium version
-=============================================
-Reads category URLs from links.xlsx, scrapes all product cards from each
-page, and saves results to:
+Arogga Category Scraper  —  Fast Parallel Version
+==================================================
+FEATURES
+  • Parallel scraping  : N Chrome workers run simultaneously (default 3)
+  • Resume support     : scrape_log.json tracks every URL — restart anytime
+                         and already-completed URLs are skipped automatically
+  • Instant CSV save   : each URL's products are written & flushed immediately
+  • Smart waits        : dynamic element waits instead of fixed sleeps
+  • Progress display   : live per-worker status + running totals
+  • Retry on failure   : failed URLs are retried once before marking as failed
 
-    output/<YYYY>/<MM-Month>/arogga_<YYYY-MM-DD>.csv
+OUTPUT
+  output/<YYYY>/<MM-Month>/arogga_<YYYY-MM-DD>.csv
 
-Requirements:
-    pip install selenium openpyxl webdriver-manager
+LOG FILE
+  scrape_log.json   (sits next to the script)
+  Contains every URL with status: pending | done | failed
+  Delete this file to start a completely fresh run.
 
-Usage:
-    python arogga_scraper.py
-    python arogga_scraper.py --links my_links.xlsx
+REQUIREMENTS
+  pip install selenium openpyxl
+
+USAGE
+  python arogga_scraper.py                        # default: 3 workers
+  python arogga_scraper.py --workers 5            # more parallel workers
+  python arogga_scraper.py --links my_links.xlsx  # custom links file
+  python arogga_scraper.py --reset                # ignore log, start fresh
 """
 
 import argparse
 import csv
+import json
 import re
 import sys
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
+from queue import Queue, Empty
 
 try:
     import openpyxl
 except ImportError:
-    sys.exit("Missing: pip install openpyxl")
+    sys.exit("❌ Missing: pip install openpyxl")
 
 try:
     from selenium import webdriver
-    from selenium.common.exceptions import (
-        NoSuchElementException,
-        StaleElementReferenceException,
-        TimeoutException,
-    )
     from selenium.webdriver.chrome.options import Options
     from selenium.webdriver.common.by import By
-    from selenium.webdriver.support import expected_conditions as EC
     from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.common.exceptions import (
+        TimeoutException, NoSuchElementException, StaleElementReferenceException,
+        WebDriverException,
+    )
 except ImportError:
-    sys.exit("Missing: pip install selenium")
+    sys.exit("❌ Missing: pip install selenium")
 
 
-# ── Output path ──────────────────────────────────────────────────────────────
-NOW = datetime.now()
-YEAR = NOW.strftime("%Y")
-MONTH_FOLD = NOW.strftime("%m-%B")  # e.g. "04-April"
-DATE_STR = NOW.strftime("%Y-%m-%d")
-OUTPUT_DIR = Path("output") / YEAR / MONTH_FOLD
-OUTPUT_FILE = OUTPUT_DIR / f"arogga_{DATE_STR}.csv"
+# ═══════════════════════════════════════════════════════════
+#  CONFIGURATION  — tweak these to tune performance
+# ═══════════════════════════════════════════════════════════
+DEFAULT_WORKERS    = 3      # parallel Chrome instances (raise to 4-5 if PC allows)
+DEFAULT_LINKS_FILE = "links.xlsx"
+LOG_FILE           = Path("scrape_log.json")
 
-# ── Selectors ─────────────────────────────────────────────────────────────────
-# Primary: main > section > div:nth-child(3) > a  (from your XPath analysis)
-CARD_CSS = "main section > div:nth-child(3) > a"
-# Fallback if layout shifts
-CARD_CSS_WIDE = "main section a[href*='/product']"
+# Timing (seconds)
+PAGE_WAIT_TIMEOUT  = 20     # max wait for product cards to appear
+SCROLL_STEP        = 1200   # px per scroll (larger = fewer steps = faster)
+SCROLL_PAUSE       = 0.5    # between each scroll step
+SCROLL_SETTLE      = 1.2    # after scrolling stops, wait for new cards to render
+BETWEEN_RETRIES    = 3      # pause before retrying a failed URL
+MAX_RETRIES        = 1      # how many times to retry a failed URL
 
-PAGE_LOAD_WAIT = 8  # seconds after page load before scraping
-SCROLL_STEP = 800  # px per scroll
-SCROLL_PAUSE = 0.8  # seconds between scrolls
-REQUEST_DELAY = 3  # seconds between category pages
+# Selectors
+CARD_CSS       = "main section > div:nth-child(3) > a"
+CARD_FALLBACK  = "main section a[href*='/product']"
+
+# ── Output paths ─────────────────────────────────────────
+NOW          = datetime.now()
+OUTPUT_DIR   = Path("output") / NOW.strftime("%Y") / NOW.strftime("%m-%B")
+OUTPUT_FILE  = OUTPUT_DIR / f"arogga_{NOW.strftime('%Y-%m-%d')}.csv"
+CSV_LOCK     = threading.Lock()   # one thread writes to CSV at a time
+LOG_LOCK     = threading.Lock()   # one thread updates the log at a time
+SERIAL_LOCK  = threading.Lock()
+_serial_counter = [1]             # mutable container so threads can share it
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-def clean(text: str) -> str:
-    return re.sub(
-        r"\s+", " ", text.replace("৳", "").replace("Tk", "").replace("\u09f3", "")
-    ).strip()
+# ═══════════════════════════════════════════════════════════
+#  LOG  (scrape_log.json)
+# ═══════════════════════════════════════════════════════════
+def log_load() -> dict:
+    if LOG_FILE.exists():
+        with open(LOG_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
 
 
+def log_save(log: dict):
+    with open(LOG_FILE, "w", encoding="utf-8") as f:
+        json.dump(log, f, indent=2, ensure_ascii=False)
+
+
+def log_set(log: dict, url: str, status: str, count: int = 0):
+    """Thread-safe update of one URL's status in the log."""
+    with LOG_LOCK:
+        log[url] = {"status": status, "count": count, "ts": datetime.now().isoformat()}
+        log_save(log)
+
+
+# ═══════════════════════════════════════════════════════════
+#  EXCEL READER
+# ═══════════════════════════════════════════════════════════
 def read_links(path: Path, has_header: bool = True) -> list:
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb.active
@@ -83,8 +126,10 @@ def read_links(path: Path, has_header: bool = True) -> list:
     return urls
 
 
+# ═══════════════════════════════════════════════════════════
+#  SELENIUM DRIVER
+# ═══════════════════════════════════════════════════════════
 def make_driver() -> webdriver.Chrome:
-    """Build a stealth Chrome WebDriver."""
     opts = Options()
     opts.add_argument("--headless=new")
     opts.add_argument("--no-sandbox")
@@ -93,246 +138,330 @@ def make_driver() -> webdriver.Chrome:
     opts.add_argument("--window-size=1366,900")
     opts.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0.0.0 Safari/537.36"
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     )
     opts.add_experimental_option("excludeSwitches", ["enable-automation"])
     opts.add_experimental_option("useAutomationExtension", False)
+    # Block images & fonts — pages load faster, product text still scrapes fine
+    prefs = {
+        "profile.managed_default_content_settings.images": 2,
+        "profile.managed_default_content_settings.fonts":  2,
+    }
+    opts.add_experimental_option("prefs", prefs)
     opts.add_argument("--disable-extensions")
     opts.add_argument("--disable-gpu")
     opts.add_argument("--lang=en-US")
 
-        # ←←← ADD THIS LINE (required on GitHub Linux runner)
+            # ←←← ADD THIS LINE (required on GitHub Linux runner)
     opts.binary_location = "/usr/bin/chromium-browser"
 
-    # Selenium 4.6+ auto-downloads the correct ChromeDriver for your Chrome version.
-    # No need for webdriver-manager at all.
     driver = webdriver.Chrome(options=opts)
-
-    # Remove webdriver fingerprint via CDP
     driver.execute_cdp_cmd(
         "Page.addScriptToEvaluateOnNewDocument",
-        {
-            "source": """
+        {"source": """
             Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
             window.chrome = { runtime: {} };
-            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3] });
-            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
-        """
-        },
+            Object.defineProperty(navigator, 'plugins', { get: () => [1,2,3] });
+            Object.defineProperty(navigator, 'languages', { get: () => ['en-US','en'] });
+        """},
     )
     return driver
 
 
-def scroll_full_page(driver):
-    """Scroll gradually to trigger lazy-loaded product cards."""
-    last_height = driver.execute_script("return document.body.scrollHeight")
-    driver.execute_script("window.scrollTo(0, 0);")
-    time.sleep(0.5)
-
-    while True:
-        current = 0
-        while current < last_height:
-            current += SCROLL_STEP
-            driver.execute_script(f"window.scrollTo(0, {current});")
-            time.sleep(SCROLL_PAUSE)
-
-        time.sleep(1.5)
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            break
-        last_height = new_height
-
-    driver.execute_script("window.scrollTo(0, 0);")
-    time.sleep(1)
+# ═══════════════════════════════════════════════════════════
+#  SCRAPING HELPERS
+# ═══════════════════════════════════════════════════════════
+def clean(text: str) -> str:
+    return re.sub(r"\s+", " ", text.replace("৳","").replace("Tk","").replace("\u09f3","")).strip()
 
 
 def safe_text(el, css: str) -> str:
-    """Get text of a child element; return '' if not found."""
     try:
-        child = el.find_element(By.CSS_SELECTOR, css)
-        return clean(child.text)
+        return clean(el.find_element(By.CSS_SELECTOR, css).text)
     except (NoSuchElementException, StaleElementReferenceException):
         return ""
 
 
 def get_name_and_volume(card) -> tuple:
-    """
-    Extract item name and volume from h4.
-    h4 contains the full name text; a <span> child holds the volume.
-    We strip the span text from h4 to isolate the product name.
-    """
     try:
-        h4 = card.find_element(By.CSS_SELECTOR, "div:nth-child(2) h4")
+        h4   = card.find_element(By.CSS_SELECTOR, "div:nth-child(2) h4")
         full = clean(h4.text)
     except (NoSuchElementException, StaleElementReferenceException):
         return "", ""
-
     try:
-        span = h4.find_element(By.TAG_NAME, "span")
-        volume = clean(span.text)
+        volume = clean(h4.find_element(By.TAG_NAME, "span").text)
     except (NoSuchElementException, StaleElementReferenceException):
         volume = ""
 
     if volume and full.endswith(volume):
-        name = full[: -len(volume)].strip()
+        name = full[:-len(volume)].strip()
     elif volume and volume in full:
         name = full.replace(volume, "").strip()
     else:
         name = full
-
     return name, volume
 
 
-def scrape_category(driver, url: str) -> list:
-    """Visit one category page and return a list of product dicts."""
-    print(f"  Loading page...")
+def scroll_and_load(driver):
+    """
+    Scroll the page in chunks until height stops growing.
+    Blocks images so this is much faster than before.
+    """
+    last_h = driver.execute_script("return document.body.scrollHeight")
+    driver.execute_script("window.scrollTo(0,0)")
+    time.sleep(0.3)
+
+    while True:
+        pos = 0
+        while pos < last_h:
+            pos += SCROLL_STEP
+            driver.execute_script(f"window.scrollTo(0,{pos})")
+            time.sleep(SCROLL_PAUSE)
+        time.sleep(SCROLL_SETTLE)
+        new_h = driver.execute_script("return document.body.scrollHeight")
+        if new_h == last_h:
+            break
+        last_h = new_h
+
+    driver.execute_script("window.scrollTo(0,0)")
+
+
+def scrape_one_url(driver, url: str) -> list:
+    """Load a single category URL and return list of product dicts."""
     try:
         driver.get(url)
-    except Exception as e:
-        print(f"  [ERROR] Navigation failed: {e}")
-        return []
+    except WebDriverException as e:
+        raise RuntimeError(f"Navigation error: {e}")
 
-    # Wait for product cards
-    wait = WebDriverWait(driver, 20)
-    found_selector = None
-    for sel in [CARD_CSS, CARD_CSS_WIDE]:
+    # Dynamic wait — stop as soon as cards appear (no fixed 8s sleep)
+    wait = WebDriverWait(driver, PAGE_WAIT_TIMEOUT)
+    found_sel = None
+    for sel in [CARD_CSS, CARD_FALLBACK]:
         try:
             wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, sel)))
-            found_selector = sel
+            found_sel = sel
             break
         except TimeoutException:
             continue
 
-    if not found_selector:
-        print(f"  [NO PRODUCTS] No cards found. Page title: {driver.title}")
-        print(f"  Snippet: {driver.page_source[:400]}")
-        return []
+    if not found_sel:
+        snippet = driver.page_source[:300].replace("\n", " ")
+        raise RuntimeError(f"No product cards found. Snippet: {snippet}")
 
-    time.sleep(PAGE_LOAD_WAIT)
-    print(f"  Scrolling to load all products...")
-    scroll_full_page(driver)
+    scroll_and_load(driver)
 
-    cards = driver.find_elements(By.CSS_SELECTOR, found_selector)
-    print(f"  Found {len(cards)} product cards")
-
+    cards = driver.find_elements(By.CSS_SELECTOR, found_sel)
     products = []
     for i, card in enumerate(cards):
         try:
             name, volume = get_name_and_volume(card)
             if not name:
                 continue
-
-            # Original price is in a <del> tag
-            orig_price = safe_text(card, "div:nth-child(2) > div:last-child div del")
-            # Discounted price in a <div> sibling of <del>
-            disc_price = safe_text(card, "div:nth-child(2) > div:last-child div > div")
-
-            # Broader fallbacks
-            if not orig_price:
-                orig_price = safe_text(card, "del")
-            if not disc_price:
-                disc_price = safe_text(
-                    card, "[class*='discount'], [class*='price'] div"
-                )
-
-            products.append(
-                {
-                    "item_name": name,
-                    "volume": volume,
-                    "price": orig_price,
-                    "discounted_price": disc_price,
-                    "source_url": url,
-                }
-            )
+            orig  = safe_text(card, "div:nth-child(2) > div:last-child div del") or safe_text(card, "del")
+            disc  = safe_text(card, "div:nth-child(2) > div:last-child div > div") or safe_text(card, "[class*='discount'] div")
+            products.append({"item_name": name, "volume": volume,
+                             "price": orig, "discounted_price": disc, "source_url": url})
         except StaleElementReferenceException:
-            print(f"  [WARN] Stale element at index {i}, skipping")
-        except Exception as exc:
-            print(f"  [WARN] Error on card {i}: {exc}")
-
+            pass
+        except Exception:
+            pass
     return products
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════
+#  CSV WRITER  (thread-safe append)
+# ═══════════════════════════════════════════════════════════
+CSV_FIELDS = ["Serial No","Item Name","Volume/Weight","Price (BDT)","Discounted Price (BDT)","Source URL"]
+
+def append_to_csv(products: list):
+    """Append a batch of products to the shared CSV (thread-safe)."""
+    if not products:
+        return
+    with CSV_LOCK:
+        with open(OUTPUT_FILE, "a", newline="", encoding="utf-8-sig") as f:
+            writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+            for p in products:
+                with SERIAL_LOCK:
+                    serial = _serial_counter[0]
+                    _serial_counter[0] += 1
+                writer.writerow({
+                    "Serial No":              serial,
+                    "Item Name":              p["item_name"],
+                    "Volume/Weight":          p["volume"],
+                    "Price (BDT)":            p["price"],
+                    "Discounted Price (BDT)": p["discounted_price"],
+                    "Source URL":             p["source_url"],
+                })
+
+
+# ═══════════════════════════════════════════════════════════
+#  WORKER  (runs in its own thread, owns its own Chrome)
+# ═══════════════════════════════════════════════════════════
+def worker(worker_id: int, queue: Queue, log: dict, stats: dict, stats_lock: threading.Lock):
+    tag = f"[Worker-{worker_id}]"
+    driver = None
+    try:
+        driver = make_driver()
+        print(f"{tag} Chrome started ✔")
+
+        while True:
+            try:
+                url = queue.get(timeout=5)
+            except Empty:
+                break
+
+            print(f"{tag} → {url}")
+            success = False
+
+            for attempt in range(1, MAX_RETRIES + 2):  # +2 = initial + retries
+                try:
+                    products = scrape_one_url(driver, url)
+                    append_to_csv(products)
+                    log_set(log, url, "done", len(products))
+
+                    with stats_lock:
+                        stats["done"]    += 1
+                        stats["products"] += len(products)
+                    done  = stats["done"]
+                    total = stats["total"]
+                    pct   = done / total * 100 if total else 0
+                    print(f"{tag} ✔ {len(products)} products  |  {done}/{total} ({pct:.1f}%) complete")
+                    success = True
+                    break
+
+                except Exception as e:
+                    if attempt <= MAX_RETRIES:
+                        print(f"{tag} ⚠ Attempt {attempt} failed: {e} — retrying in {BETWEEN_RETRIES}s")
+                        time.sleep(BETWEEN_RETRIES)
+                        # Restart driver if it crashed
+                        try:
+                            driver.current_url
+                        except WebDriverException:
+                            print(f"{tag} Driver crashed, restarting...")
+                            try: driver.quit()
+                            except: pass
+                            driver = make_driver()
+                    else:
+                        print(f"{tag} ✘ FAILED after {attempt} attempts: {e}")
+                        log_set(log, url, "failed", 0)
+                        with stats_lock:
+                            stats["failed"] += 1
+
+            queue.task_done()
+
+    finally:
+        if driver:
+            try: driver.quit()
+            except: pass
+        print(f"{tag} Chrome closed.")
+
+
+# ═══════════════════════════════════════════════════════════
+#  MAIN
+# ═══════════════════════════════════════════════════════════
 def main():
-    parser = argparse.ArgumentParser(description="Arogga category scraper (Selenium)")
-    parser.add_argument(
-        "--links",
-        default="links.xlsx",
-        help="Excel file with category URLs in column A",
-    )
-    parser.add_argument(
-        "--no-header", action="store_true", help="Excel file has no header row"
-    )
+    parser = argparse.ArgumentParser(description="Arogga parallel scraper with resume")
+    parser.add_argument("--links",     default=DEFAULT_LINKS_FILE, help="Excel file with URLs in column A")
+    parser.add_argument("--workers",   type=int, default=DEFAULT_WORKERS, help="Parallel Chrome instances (default 3)")
+    parser.add_argument("--no-header", action="store_true", help="Excel has no header row")
+    parser.add_argument("--reset",     action="store_true", help="Ignore existing log and scrape everything fresh")
     args = parser.parse_args()
 
+    # ── Load links ──────────────────────────────────────────
     links_path = Path(args.links)
     if not links_path.exists():
         sys.exit(f"❌ Links file not found: {links_path}")
+    all_urls = read_links(links_path, has_header=not args.no_header)
+    if not all_urls:
+        sys.exit("❌ No valid URLs found in column A of the Excel file.")
 
-    urls = read_links(links_path, has_header=not args.no_header)
-    if not urls:
-        sys.exit(
-            "❌ No valid URLs found in the Excel file (URLs must be in column A and start with 'http')."
-        )
+    # ── Load / reset log ────────────────────────────────────
+    log = {} if args.reset else log_load()
 
-    print(f"✔ Loaded {len(urls)} category URL(s) from {links_path}")
-    print(f"✔ Output will be saved to: {OUTPUT_FILE}\n")
+    # Seed log with any new URLs not seen before
+    for url in all_urls:
+        if url not in log:
+            log[url] = {"status": "pending", "count": 0, "ts": ""}
+    log_save(log)
 
+    # Only queue URLs that are not already done
+    pending = [u for u in all_urls if log.get(u, {}).get("status") != "done"]
+    already_done = len(all_urls) - len(pending)
+
+    print(f"\n{'═'*60}")
+    print(f"  Arogga Scraper  —  Parallel Mode ({args.workers} workers)")
+    print(f"{'═'*60}")
+    print(f"  Total URLs      : {len(all_urls)}")
+    print(f"  Already done    : {already_done}  (skipping)")
+    print(f"  To scrape now   : {len(pending)}")
+    print(f"  Output file     : {OUTPUT_FILE}")
+    print(f"  Log file        : {LOG_FILE}")
+    print(f"{'═'*60}\n")
+
+    if not pending:
+        print("✅ Nothing to do — all URLs already scraped.")
+        print("   Run with --reset to force a fresh scrape.")
+        return
+
+    # ── Prepare output file ─────────────────────────────────
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    csv_fields = [
-        "Serial No",
-        "Item Name",
-        "Volume/Weight",
-        "Price (BDT)",
-        "Discounted Price (BDT)",
-        "Source URL",
-    ]
-
-    serial = 1
-    driver = make_driver()
-
-    try:
+    # Write header only if file doesn't exist yet (resume-safe)
+    if not OUTPUT_FILE.exists():
         with open(OUTPUT_FILE, "w", newline="", encoding="utf-8-sig") as f:
-            writer = csv.DictWriter(f, fieldnames=csv_fields)
-            writer.writeheader()
+            csv.DictWriter(f, fieldnames=CSV_FIELDS).writeheader()
+    else:
+        # Count existing rows to continue serial numbering correctly
+        with open(OUTPUT_FILE, "r", encoding="utf-8-sig") as f:
+            existing = sum(1 for _ in f) - 1  # subtract header
+        _serial_counter[0] = max(1, existing + 1)
+        print(f"  Resuming from serial #{_serial_counter[0]}  ({existing} products already in CSV)")
 
-            for idx, url in enumerate(urls, start=1):
-                print(f"\n[{idx}/{len(urls)}] {url}")
-                products = scrape_category(driver, url)
+    # ── Fill queue ───────────────────────────────────────────
+    q = Queue()
+    for url in pending:
+        q.put(url)
 
-                for p in products:
-                    writer.writerow(
-                        {
-                            "Serial No": serial,
-                            "Item Name": p["item_name"],
-                            "Volume/Weight": p["volume"],
-                            "Price (BDT)": p["price"],
-                            "Discounted Price (BDT)": p["discounted_price"],
-                            "Source URL": p["source_url"],
-                        }
-                    )
-                    serial += 1
+    stats      = {"done": 0, "failed": 0, "products": 0, "total": len(pending)}
+    stats_lock = threading.Lock()
 
-                f.flush()
-                print(
-                    f"  ✔ {len(products)} products scraped  (running total: {serial - 1})"
-                )
+    # ── Launch workers ───────────────────────────────────────
+    n_workers = min(args.workers, len(pending))
+    threads   = []
+    t_start   = time.time()
 
-                if idx < len(urls):
-                    print(f"  Waiting {REQUEST_DELAY}s...")
-                    time.sleep(REQUEST_DELAY)
+    for i in range(1, n_workers + 1):
+        t = threading.Thread(
+            target=worker,
+            args=(i, q, log, stats, stats_lock),
+            daemon=True,
+        )
+        t.start()
+        threads.append(t)
+        time.sleep(1.5)   # stagger starts so Chrome instances don't all hit the site simultaneously
 
-    finally:
-        driver.quit()
+    for t in threads:
+        t.join()
 
-    total = serial - 1
-    print(f"\n{'=' * 55}")
+    elapsed = time.time() - t_start
+    total_products = stats["products"]
+    done_count     = stats["done"]
+    fail_count     = stats["failed"]
+
+    print(f"\n{'═'*60}")
     print(f"✅ Scraping complete!")
-    print(f"   Total products : {total}")
-    print(f"   Saved to       : {OUTPUT_FILE}")
-    print(f"{'=' * 55}")
+    print(f"   URLs scraped    : {done_count}  ({fail_count} failed)")
+    print(f"   Total products  : {total_products}")
+    print(f"   Time taken      : {elapsed/60:.1f} minutes")
+    if done_count:
+        print(f"   Avg per URL     : {elapsed/done_count:.1f}s")
+    print(f"   Output file     : {OUTPUT_FILE}")
+    if fail_count:
+        failed_urls = [u for u, v in log.items() if v["status"] == "failed"]
+        print(f"\n   ⚠ Failed URLs ({fail_count}):")
+        for u in failed_urls:
+            print(f"     {u}")
+        print(f"\n   Re-run the script to retry failed URLs automatically.")
+    print(f"{'═'*60}")
 
 
 if __name__ == "__main__":
