@@ -2,14 +2,14 @@ name: Chaldal Daily Scraper
 
 on:
   schedule:
-    - cron: '0 3 * * *'      # Runs every day at 3:00 AM UTC (= 9:00 AM Bangladesh time)
-  workflow_dispatch:         # Allows you to run it manually anytime
+    - cron: '0 3 * * *'      # Runs every day at 3:00 AM UTC
+  workflow_dispatch:         # Allows manual triggers
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
     permissions:
-      contents: write        # Required so the workflow can commit the CSV
+      contents: write        
 
     steps:
       - name: Checkout repository
@@ -20,39 +20,30 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Chromium + ChromeDriver
-  run: |
-    # Install dependencies only
-    sudo apt-get update --fix-missing
-    
-    # Install Chromium and ChromeDriver from snap (more reliable)
-    sudo snap install chromium
-    
-    # ChromeDriver - download directly from chromedriver repository
-    wget https://edgedl.me/chromedriver/LATEST_RELEASE -O /tmp/chromedriver_version.txt
-    CHROMEDRIVER_VERSION=$(cat /tmp/chromedriver_version.txt)
-    wget https://edgedl.me/chromedriver/${CHROMEDRIVER_VERSION}/chromedriver-linux64.zip -O /tmp/chromedriver.zip
-    unzip /tmp/chromedriver.zip -d /tmp/
-    sudo mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/
-    sudo chmod +x /usr/local/bin/chromedriver
-
-      - name: Install Python dependencies
+      - name: Install Selenium and Dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r Chaldal/requirements.txt
 
       - name: Run Chaldal scraper
         run: |
           cd Chaldal
           python Chaldal_scrape.py
+        env:
+          # This helps Selenium find the pre-installed Chrome in the runner
+          CHROME_BIN: /usr/bin/google-chrome
 
       - name: Commit and push the new CSV
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Chaldal/chaldal_products_*.csv
+          
+          # Add only the Chaldal directory files
+          git add Chaldal/*.csv
+          
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: update chaldal_products_$(date +'%Y-%m-%d').csv"
+            git commit -m "chore: update chaldal data $(date +'%Y-%m-%d')"
             git push
           fi
