@@ -20,10 +20,21 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Chromium + ChromeDriver
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y chromium-browser chromium-chromedriver
+- name: Install Chromium + ChromeDriver
+  run: |
+    # Install dependencies only
+    sudo apt-get update --fix-missing
+    
+    # Install Chromium and ChromeDriver from snap (more reliable)
+    sudo snap install chromium
+    
+    # ChromeDriver - download directly from chromedriver repository
+    wget https://edgedl.me/chromedriver/LATEST_RELEASE -O /tmp/chromedriver_version.txt
+    CHROMEDRIVER_VERSION=$(cat /tmp/chromedriver_version.txt)
+    wget https://edgedl.me/chromedriver/${CHROMEDRIVER_VERSION}/chromedriver-linux64.zip -O /tmp/chromedriver.zip
+    unzip /tmp/chromedriver.zip -d /tmp/
+    sudo mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/
+    sudo chmod +x /usr/local/bin/chromedriver
 
       - name: Install Python dependencies
         run: |
