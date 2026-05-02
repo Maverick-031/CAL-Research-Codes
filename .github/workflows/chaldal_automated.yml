@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.12'
 
-- name: Install Chromium + ChromeDriver
+      - name: Install Chromium + ChromeDriver
   run: |
     # Install dependencies only
     sudo apt-get update --fix-missing
