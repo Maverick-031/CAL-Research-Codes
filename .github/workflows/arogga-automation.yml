@@ -11,53 +11,42 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r Arogga/requirements.txt
-
       - name: Ensure output directory exists
         run: mkdir -p Arogga/output
-
       - name: Run Arogga scraper
         run: |
           cd Arogga
           python arogga_scraper.py
         env:
           CHROME_BIN: /usr/bin/google-chrome
-
       - name: Debug - list output directory
         run: |
-          echo "=== Arogga/output contents ==="
-          ls -la Arogga/output/ || echo "directory missing"
+          echo "=== Arogga/output tree ==="
+          find Arogga/output -type f || echo "directory empty or missing"
           echo "=== Any CSVs anywhere under Arogga ==="
           find Arogga -name "*.csv" -type f || true
-
       - name: Commit and push the new CSV
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          # Safely check for matching files before git add
-          shopt -s nullglob
-          files=(Arogga/output/arogga_*.csv)
-
+          # Safely check for matching files before git add (recursive)
+          shopt -s nullglob globstar
+          files=(Arogga/output/**/arogga_*.csv)
           if [ ${#files[@]} -eq 0 ]; then
             echo "No arogga_*.csv files were produced — scraper likely failed. Skipping commit."
             exit 0
           fi
-
           echo "Found ${#files[@]} CSV file(s):"
           printf '  %s\n' "${files[@]}"
-
-          git add Arogga/output/arogga_*.csv
-
+          git add Arogga/output/**/arogga_*.csv
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
