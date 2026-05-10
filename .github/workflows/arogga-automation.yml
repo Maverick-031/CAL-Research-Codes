@@ -1,16 +1,13 @@
 name: Arogga Daily Scraper
-
 on:
   schedule:
     - cron: '0 18 * * *'      # Runs daily at 12:00 AM Bangladesh Time (6:00 PM UTC)
-  workflow_dispatch:         # Allows manual triggers
-
+  workflow_dispatch:
 jobs:
   scrape:
     runs-on: ubuntu-latest
     permissions:
-      contents: write        
-
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,22 +22,42 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r Arogga/requirements.txt
 
+      - name: Ensure output directory exists
+        run: mkdir -p Arogga/output
+
       - name: Run Arogga scraper
         run: |
           cd Arogga
           python arogga_scraper.py
         env:
-          # Uses the pre-installed Chrome on the runner
           CHROME_BIN: /usr/bin/google-chrome
+
+      - name: Debug - list output directory
+        run: |
+          echo "=== Arogga/output contents ==="
+          ls -la Arogga/output/ || echo "directory missing"
+          echo "=== Any CSVs anywhere under Arogga ==="
+          find Arogga -name "*.csv" -type f || true
 
       - name: Commit and push the new CSV
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          # Using a wildcard to catch all files in the output directory
+
+          # Safely check for matching files before git add
+          shopt -s nullglob
+          files=(Arogga/output/arogga_*.csv)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No arogga_*.csv files were produced — scraper likely failed. Skipping commit."
+            exit 0
+          fi
+
+          echo "Found ${#files[@]} CSV file(s):"
+          printf '  %s\n' "${files[@]}"
+
           git add Arogga/output/arogga_*.csv
-          
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
