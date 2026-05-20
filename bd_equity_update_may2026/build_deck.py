@@ -2,7 +2,11 @@
 CAL Bangladesh Research — Bangladesh Equity Market Update
 Deliverable for Commercial Bank of Ceylon | May 2026
 
-Build an 8-slide investment-bank-grade PPTX using python-pptx.
+SUPERSEDED — this is the original 8-slide generator (trailing P/E 10.1x working set).
+The shipped deliverable was later hand-edited (P/E refreshed to 8.5x, disclaimer added)
+and is post-processed by add_narrative_slide.py. This script is kept for reference only
+and now writes to a clearly-marked legacy filename so it cannot overwrite the deliverable.
+
 Brand: C6198D (magenta), 2F3691 (deep blue), 01A7E1 (cyan). Font: DM Sans.
 """
 
@@ -871,7 +875,7 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(SCRIPT_DIR, "output")
 os.makedirs(OUT_DIR, exist_ok=True)
-OUT = os.path.join(OUT_DIR, "CAL_BD_Equity_Update_CBC_May2026.pptx")
+OUT = os.path.join(OUT_DIR, "legacy_CAL_BD_Equity_Update_v1_8slide.pptx")
 prs.save(OUT)
 print(f"Saved: {OUT}")
 print(f"Total slides: {len(prs.slides)}")

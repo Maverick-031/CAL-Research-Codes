@@ -5,13 +5,26 @@
 
 ---
 
+## 0. GOVERNING NARRATIVE (Slide 2 — "the story in four moves")
+
+Per desk guidance, the deck opens on a single narrative arc before the three-pillar summary:
+
+1. **The setup** — markets were *primed to rally*: post-election stability (BNP government since Feb-26), inflation rolling over from its 2024–25 peak, and the market positioned for the first rate cut.
+2. **The shock** — the **Middle East (Iran–Israel) war** spiked energy/LNG costs, knocked the inflation and policy-rate trajectory off track, and **pushed the easing cycle — and the equity re-rating — back by at least 6 months. Delayed, not derailed.**
+3. **The valuation** — the delay leaves the market *cheaper than at the setup*: **8.5x trailing P/E**, ~30% below the 10-yr average, ~48% below Vietnam, **+42% re-rating upside** to the long-run mean (ex-EPS growth).
+4. **The changes** — reforms keep compounding through the wait: BSEC rulebook reset + new chairman, CCBL/T+1 accessibility track, and sukuk carry (~10.4%) that pays you to be patient.
+
+**Net:** the catalyst is delayed, not cancelled, and the entry is cheaper than when the thesis began.
+
+---
+
 ## 1. EXECUTIVE SUMMARY (Minto governing thought)
 
-> **Bangladesh equities trade at ~10x trailing P/E — a ~17% discount to the 10-year average and ~44% discount to Vietnam — even as a multi-year regulatory reset, settlement-cycle upgrade and a stabilising macro create the conditions for a re-rating. We see asymmetric upside for patient capital willing to underwrite continued reform execution under the new government and incoming BSEC leadership.**
+> **Bangladesh equities trade at 8.5x trailing P/E — a ~30% discount to the 10-year average and ~48% discount to Vietnam — even as a multi-year regulatory reset, settlement-cycle upgrade and a stabilising (if war-delayed) macro create the conditions for a re-rating. We see asymmetric upside for patient capital willing to underwrite continued reform execution under the new government and incoming BSEC leadership.**
 
 Three supporting pillars:
 1. **Cheap on every absolute and relative metric** (P/E, drawdown, mkt-cap/GDP).
-2. **Cyclical headwinds are visible, dated, and increasingly priced in** (10% repo, sticky CPI, 30%+ NPL recognition, war-driven LNG shortfall).
+2. **Cyclical headwinds are visible, dated, and increasingly priced in** (10% repo, easing cycle pushed back ~6m by the energy shock, 30%+ NPL recognition, war-driven LNG shortfall).
 3. **Structural tailwinds compound** (BSEC reset and pending leadership change, floor-price removal, CCBL/T+1 plumbing, REIT/sukuk depth, MSCI monitoring, FY27 budget capital-market push).
 
 ---
@@ -20,27 +33,29 @@ Three supporting pillars:
 
 | Metric | Value | Source |
 |---|---|---|
-| DSEX (12 May 2026 close) | 5,229 | TBS / DSE |
+| DSEX (19 May 2026 close) | 5,211 | TBS / DSE |
 | DS30 (blue-chip) | ~1,980 | DSE |
 | 52-week range | 4,588 – 5,675 | Investing.com |
 | 1Y return | +9% (approx.) | Investing.com trailing |
 | Drawdown from Sep-2021 peak (7,329) | **-28.6%** | CEIC / Trading Economics |
 | Recovery from Jan-2025 trough (~3,700) | +41% | DSE / press recaps |
 | Market cap (Feb 2026) | **USD ~29.7 bn** | CEIC |
-| Market cap / GDP | ~19.5% | Taprobane Market Lens |
+| Market cap / GDP | ~5.9% | CEIC / CAL (equity-only mkt cap ÷ nominal GDP) |
 | Avg daily turnover (May 2026) | BDT 727–1,101 cr range | TBS |
-| **Trailing P/E (Feb 2026)** | **~10.1x** | CEIC |
+| **Trailing P/E (current reading)** | **8.5x** | CEIC (latest trailing; end-2025 low 8.6x revisited) |
 | 10Y avg P/E | 12.1x | CEIC (Nov 2000 – Feb 2026 avg) |
-| End-2025 P/E low | 8.6x | BSEC via win-tk.org |
-| Implied discount to 10Y avg | ~17% | calc |
+| Implied discount to 10Y avg | ~29.7% | calc |
+| Implied re-rating upside to 10Y avg | ~+42% | calc (ex-EPS growth) |
 
 ### Peer P/E comparison (trailing)
 | Market | P/E |
 |---|---|
-| Bangladesh DSEX | **~10x** |
-| Vietnam VN-Index | 18.0x |
+| Bangladesh DSEX | **8.5x** |
+| Vietnam VN-Index | 16.6x |
 | Pakistan KSE-100 | 5–6x (select) |
 | Egypt EGX (select banks) | ~4x |
+
+> **Note on the valuation refresh:** the deck pins the trailing P/E at the latest, lower reading of **8.5x** (vs an earlier ~10x working figure) and corrects market-cap/GDP to **~5.9%** (equity-only market cap ÷ nominal GDP ≈ USD 29.7 bn / ~USD 500 bn), replacing an earlier ~19.5% figure that conflated definitions. Discounts and upside are recomputed on the 8.5x base.
 
 ### Top market-cap names (DSE)
 | Rank | Stock | Mkt Cap (BDT cr) | % of DSE |
@@ -199,13 +214,12 @@ Three supporting pillars:
 
 | # | Calculation | Working |
 |---|---|---|
-| 1 | DSEX discount to 10Y avg | 10.1 / 12.1 − 1 = **-16.5%** |
-| 2 | DSEX discount to Vietnam VN-Index | 10.1 / 18.0 − 1 = **-43.9%** |
-| 3 | DSEX drawdown from 2021 peak | 5,229 / 7,329 − 1 = **-28.6%** |
+| 1 | DSEX discount to 10Y avg | 8.5 / 12.1 − 1 = **-29.7%** |
+| 2 | DSEX discount to Vietnam VN-Index | 8.5 / 16.6 − 1 = **-48.8%** |
+| 3 | DSEX drawdown from 2021 peak | 5,211 / 7,329 − 1 = **-28.9%** |
 | 4 | Real lending rate | 15% − 9.04% CPI = **+5.96%** |
-| 5 | Top-5 concentration | (42,710+19,129+18,673+15,000+10,000)/355,000 ≈ **30%** |
-| 6 | FPI outflow ratio | 66/9 = **7.3x** worsening YoY |
-| 7 | Implied DSEX upside if it rerates to 12.1x (avg) | 12.1/10.1 − 1 = **+19.8%** ex-EPS growth |
+| 5 | FPI outflow ratio | 66/9 = **7.3x** worsening YoY |
+| 6 | Implied DSEX upside if it rerates to 12.1x (avg) | 12.1/8.5 − 1 = **+42.4%** ex-EPS growth |
 
 ---
 
