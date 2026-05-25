@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+outputs/raw_html/
+.scrape_state.json
+outputs/.scrape_state.json
